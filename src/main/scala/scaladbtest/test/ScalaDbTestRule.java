@@ -1,6 +1,7 @@
 package scaladbtest.test;
 
 import java.io.File;
+import java.sql.DriverManager;
 
 import javax.sql.DataSource;
 
@@ -10,6 +11,12 @@ import org.junit.runners.model.Statement;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 public class ScalaDbTestRule implements TestRule {
+	
+	private DataSource dataSource;
+
+	public ScalaDbTestRule(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	public Statement apply(final Statement base, final Description description) {
 
@@ -30,8 +37,6 @@ public class ScalaDbTestRule implements TestRule {
 					script = description.getMethodName();
 				}
 				String baseDir = annotation.directory() + File.separator + description.getClassName().replace('.', File.separatorChar);
-				DataSource dataSource = new DriverManagerDataSource(
-						annotation.url());
 				ScalaDbTester scalaDbTester = new ScalaDbTester(dataSource, baseDir);
 				if (new File(baseDir, "common.dbt").canRead()) {
 					scalaDbTester.onBefore("common.dbt");

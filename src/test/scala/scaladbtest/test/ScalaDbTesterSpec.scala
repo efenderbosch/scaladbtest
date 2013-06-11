@@ -21,51 +21,43 @@ import javax.sql.DataSource
 
 class ScalaDbTesterSpec extends DataSourceSpecSupport with PrivateMethodTester {
 
-	var tester: ScalaDbTester = _
+  var tester: ScalaDbTester = _
 
-	override protected def initializeDataSourceReferences(dataSource: DataSource) {
-		tester = new ScalaDbTester(dataSource, Some("src/test/resources/dsl"))
-	}
-	
-	describe("Scala DB Tester") {
-		describe("with a base directory") {
-			it("should add missing slash to the path if it's missing") {
-				val addMissingSlash = PrivateMethod[String]('addMissingSlash)
+  override protected def initializeDataSourceReferences(dataSource: DataSource) {
+    tester = new ScalaDbTester(dataSource, Some("src/test/resources/dsl"))
+  }
 
-				tester invokePrivate addMissingSlash("some/path") should equal ("some/path/")
-			}
+  describe("Scala DB Tester") {
+    describe("with a base directory") {
+      it("should add missing slash to the path if it's missing") {
+        val addMissingSlash = PrivateMethod[String]('addMissingSlash)
 
-			it("should not add missing slash to the path if it's present") {
-				val addMissingSlash = PrivateMethod[String]('addMissingSlash)
+        tester invokePrivate addMissingSlash("some/path") should equal("some/path/")
+      }
 
-				tester invokePrivate addMissingSlash("some/path/") should equal ("some/path/")
-			}
+      it("should not add missing slash to the path if it's present") {
+        val addMissingSlash = PrivateMethod[String]('addMissingSlash)
 
-			it("should transform a list of files to add base path and any missing slashes") {
-				val absoluteFilenames = PrivateMethod[Traversable[String]]('absoluteFilenames)
+        tester invokePrivate addMissingSlash("some/path/") should equal("some/path/")
+      }
 
-				tester invokePrivate absoluteFilenames(List("file1.dbt", "file2.dbt")) should equal (
-					List("src/test/resources/dsl/file1.dbt", "src/test/resources/dsl/file2.dbt"))
-			}
+      it("should transform a list of files to add base path and any missing slashes") {
+        val absoluteFilenames = PrivateMethod[Traversable[String]]('absoluteFilenames)
 
-			it("should insert and delete all data before test") {
-			  tester.onBefore("two_string_table.dbt")
+        tester invokePrivate absoluteFilenames(List("file1.dbt", "file2.dbt")) should equal(
+          List("src/test/resources/dsl/file1.dbt", "src/test/resources/dsl/file2.dbt"))
+      }
 
-				jdbcTemplate.queryForInt("select count(*) from two_string_table") should equal (2)
+      it("should insert and delete all data before test") {
+        tester.onBefore("two_string_table.dbt")
 
-				tester.onAfter()
+        jdbcTemplate.queryForInt("select count(*) from two_string_table") should equal(2)
 
-				jdbcTemplate.queryForInt("select count(*) from two_string_table") should equal (0)
-			}
+        tester.onAfter()
 
-			it("should insert all data from a java collection") {
-				val list: java.util.Collection[String] = new java.util.ArrayList[String]()
-				list.add("two_string_table.dbt")
-				tester.onBefore(list)
-
-				jdbcTemplate.queryForInt("select count(*) from two_string_table") should equal (2)
-			}
-		}
-	}
+        jdbcTemplate.queryForInt("select count(*) from two_string_table") should equal(0)
+      }
+    }
+  }
 
 }

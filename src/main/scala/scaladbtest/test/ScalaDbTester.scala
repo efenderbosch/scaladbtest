@@ -2,7 +2,6 @@ package scaladbtest.test
 
 import javax.sql.DataSource
 import scaladbtest.model.TestData
-import scalaj.collection.Imports._
 
 /*
 * Copyright 2010 Ken Egervari
@@ -33,10 +32,6 @@ class ScalaDbTester(
 
 	def onBefore(filename: String) {
 		onBefore(List(filename))
-	}
-
-	def onBefore(filenames: java.util.Collection[String]) {
-		onBefore(filenames.asScala)
 	}
 
 	def onBefore(filenames: Traversable[String]) {

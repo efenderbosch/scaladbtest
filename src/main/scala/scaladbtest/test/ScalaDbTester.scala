@@ -36,6 +36,7 @@ class ScalaDbTester(
 
 	def onBefore(filenames: Traversable[String]) {
 		testData.load(absoluteFilenames(filenames))
+		testData.deleteAll()
 		testData.insertAll()
 	}
 

@@ -24,19 +24,13 @@ public class ScalaDbTestRule implements TestRule {
 
 			@Override
 			public void evaluate() throws Throwable {
-				ScalaDbTest annotation = description.getAnnotation(ScalaDbTest.class);
-				if (annotation == null) {
-					annotation = description.getTestClass().getAnnotation(ScalaDbTest.class);
-				}
-				if (annotation == null) {
+				SkipScalaDbTest skip = description.getAnnotation(SkipScalaDbTest.class);
+				if (skip != null) {
 					base.evaluate();
 					return;
 				}
-				String script = annotation.script();
-				if ("".equals(script)) {
-					script = description.getMethodName();
-				}
-				String baseDir = annotation.directory() + File.separator + description.getClassName().replace('.', File.separatorChar);
+				String script = description.getMethodName();
+				String baseDir = "src/test/resources/" + description.getClassName().replace('.', File.separatorChar);
 				ScalaDbTester scalaDbTester = new ScalaDbTester(dataSource, baseDir);
 				if (new File(baseDir, "common.dbt").canRead()) {
 					scalaDbTester.onBefore("common.dbt");
@@ -49,7 +43,5 @@ public class ScalaDbTestRule implements TestRule {
 				}
 			}
 		};
-
 	}
-
 }

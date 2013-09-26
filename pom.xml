@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>scaladbtest</groupId>
 	<artifactId>scaladbtest</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<properties>
 		<scala.version>2.10.2</scala.version>
 		<springVersion>3.2.1.RELEASE</springVersion>
@@ -48,6 +48,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://devlocal-01:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://devlocal-01:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>

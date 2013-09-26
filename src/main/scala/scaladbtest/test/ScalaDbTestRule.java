@@ -1,7 +1,9 @@
 package scaladbtest.test;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -19,6 +21,32 @@ public class ScalaDbTestRule implements TestRule {
 	}
 
 	public Statement apply(final Statement base, final Description description) {
+
+		SkipScalaDbTest skip = description.getAnnotation(SkipScalaDbTest.class);
+		if (skip != null) {
+			return base;
+		}
+
+		Connection connection = null;
+		try {
+			connection = dataSource.getConnection();
+		} catch (SQLException e) {
+			System.out.println("Warning: skipping " + description + " due to " + e.getMessage());
+			return new Statement() {
+				@Override
+				public void evaluate() throws Throwable {
+					// no-op
+				}
+			};
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ignore) {
+					// ignore
+				}
+			}
+		}
 
 		return new Statement() {
 
